@@ -181,17 +181,8 @@ class Monitor():
                 return (1 - alpha) * currnet + alpha * last
 
         patterns = [[r'TX.+bytes (\d+)', 1, int], [r'RX.+bytes (\d+)', 1, int]]
-        tx_bytes, rx_bytes = parse_cmd_output(['/sbin/ifconfig', iface],
-                                              patterns)
-        elapsed = time.time() - self.last_time
-        self.tx_rate = exponential_moving_average(
-            (tx_bytes - self.tx_bytes) * 8 / elapsed, self.tx_rate)
-        self.tx_bytes = tx_bytes
-        self.rx_rate = exponential_moving_average(
-            (rx_bytes - self.rx_bytes) * 8 / elapsed, self.rx_rate)
-        self.rx_bytes = rx_bytes
-        self.last_time = time.time()
-        return self.tx_rate, self.rx_rate
+        # FIXME: Not implemented yet.
+        return 0.0, 0.0
 
     def battery_status(self):
         """Return the existence of AC power supply and the battery status
