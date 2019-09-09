@@ -184,6 +184,19 @@ class Monitor():
         # FIXME: Not implemented yet.
         return 0.0, 0.0
 
+    def audio_status(self):
+        """Return the current volume of the defualt audio."""
+        code, output = subprocess.getstatusoutput('amixer get Master')
+        m = re.search(r'Playback.*\[(\d+)%\]', output)
+        level = int(m.group(1)) if m else -1
+        m = re.search(r'\[(\w+)\]$', output)
+        is_mute = False
+        if m:
+            status = m.group(1)
+            if status == 'off':
+                is_mute = True
+        return level, is_mute
+
     def battery_status(self):
         """Return the existence of AC power supply and the battery status
         (capacity and the expected remaining running time)."""
@@ -295,6 +308,11 @@ class Monitor():
         rec_mark = '*' if recording else ' '
         return '{}{} {}x{}'.format(dev, rec_mark, width, height)
 
+    def compose_audio_status(self):
+        level, is_mute = self.audio_status()
+        is_mute = 'm' if is_mute else '-'
+        return 'VOL{:3}%{:1}'.format(level, is_mute)
+
     def compose_clock_string(self):
         clock, second_clock = self.time_string()
         return '[{}] {}'.format(second_clock, clock)
@@ -308,6 +326,7 @@ class Monitor():
             stats.append(self.compose_wifi_status(iface, addr))
             stats.append(self.compose_net_status(iface, addr))
         stats.append(self.compose_power_status())
+        stats.append(self.compose_audio_status())
         stats.append(self.compose_cpu_status())
         stats.append(self.compose_video_status())
         stats.append(self.compose_clock_string())
@@ -336,6 +355,7 @@ def do_tests():
         print(mon.net_status('wlan0'))
     print(mon.battery_status())
     print(mon.cpu_status())
+    print(mon.audio_status())
     print(mon.video_status())
     print(mon.time_string())
     print(mon.status_string(80))
