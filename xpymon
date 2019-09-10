@@ -310,8 +310,8 @@ class Monitor():
 
     def compose_audio_status(self):
         level, is_mute = self.audio_status()
-        is_mute = 'm' if is_mute else '-'
-        return 'VOL{:3}%{:1}'.format(level, is_mute)
+        is_mute = '*' if is_mute else ' '
+        return 'VOL{}{:3}%'.format(is_mute, level)
 
     def compose_clock_string(self):
         clock, second_clock = self.time_string()
